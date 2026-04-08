@@ -77,12 +77,17 @@ done
 
 target_dir="${BACKUPS_DIR}/data${selected_x}/${user_name}"
 
-if [[ -e "${target_dir}" && ! -d "${target_dir}" ]]; then
+if [[ -d "${target_dir}" ]]; then
+    echo "Erreur : le répertoire ${target_dir} existe déjà." >&2
+    exit 1
+fi
+
+if [[ -e "${target_dir}" ]]; then
     echo "Erreur : ${target_dir} existe déjà mais n'est pas un répertoire." >&2
     exit 1
 fi
 
-mkdir -p "${target_dir}"
+mkdir "${target_dir}"
 chown "${DIR_OWNER}:${DIR_GROUP}" "${target_dir}"
 chmod "${DIR_MODE}" "${target_dir}"
 
