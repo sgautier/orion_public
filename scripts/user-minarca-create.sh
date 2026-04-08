@@ -77,13 +77,26 @@ done
 
 target_dir="${BACKUPS_DIR}/data${selected_x}/${user_name}"
 
-if [[ -d "${target_dir}" ]]; then
-    echo "Erreur : le répertoire ${target_dir} existe déjà." >&2
-    exit 1
-fi
+existing_paths=()
 
-if [[ -e "${target_dir}" ]]; then
-    echo "Erreur : ${target_dir} existe déjà mais n'est pas un répertoire." >&2
+for x in "${available_x[@]}"; do
+    candidate_dir="${BACKUPS_DIR}/data${x}/${user_name}"
+
+    if [[ -d "${candidate_dir}" ]]; then
+        existing_paths+=("${candidate_dir}")
+    elif [[ -e "${candidate_dir}" ]]; then
+        echo "Erreur : ${candidate_dir} existe déjà mais n'est pas un répertoire." >&2
+        exit 1
+    fi
+done
+
+if [[ "${#existing_paths[@]}" -gt 0 ]]; then
+    echo "Erreur : l'utilisateur ${user_name} existe déjà dans : " >&2
+
+    for path in "${existing_paths[@]}"; do
+        echo " - ${path}" >&2
+    done
+
     exit 1
 fi
 
